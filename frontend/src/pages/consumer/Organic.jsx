@@ -3,17 +3,26 @@ import { ShoppingCart, Star, Filter, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../routes/CartContext';
 
+// Import local images
+import honeyImg from '../../assets/images/products/organic_honey.jpg';
+import coconutOilImg from '../../assets/images/products/coconut_oil.jpg';
+import jaggeryImg from '../../assets/images/products/jaggery_powder.jpg';
+import brownSugarImg from '../../assets/images/products/brown_sugar.jpg';
+import rockSaltImg from '../../assets/images/products/rock_salt.jpg';
+import vinegarImg from '../../assets/images/products/apple_cider_vinegar.jpg';
+import heroImg from '../../assets/images/products/organic_hero.jpg';
+
 export default function OrganicPage() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
   const products = [
-    { id: 701, name: "Organic Honey", price: 400, unit: "500g", img: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?q=80&w=600&auto=format&fit=crop", rating: 5.0 },
-    { id: 702, name: "Cold Pressed Coconut Oil", price: 350, unit: "500ml", img: "https://images.unsplash.com/photo-1594910609363-2f0866cfce79?q=80&w=600&auto=format&fit=crop", rating: 4.8 },
-    { id: 703, name: "Jaggery Powder", price: 80, unit: "kg", img: "https://images.unsplash.com/photo-1610725377465-229396eb7c02?q=80&w=600&auto=format&fit=crop", rating: 4.9 },
-    { id: 704, name: "Organic Brown Sugar", price: 120, unit: "kg", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=600&auto=format&fit=crop", rating: 4.7 },
-    { id: 705, name: "Rock Salt (Himalayan)", price: 60, unit: "packet", img: "https://images.unsplash.com/photo-1626079730070-5b56b9c978c4?q=80&w=600&auto=format&fit=crop", rating: 5.0 },
-    { id: 706, name: "Apple Cider Vinegar", price: 450, unit: "bottle", img: "https://images.unsplash.com/photo-1566819076598-a6125712c41c?q=80&w=600&auto=format&fit=crop", rating: 4.8 },
+    { id: 701, name: "Organic Honey", price: 400, unit: "500g", img: honeyImg, rating: 5.0 },
+    { id: 702, name: "Cold Pressed Coconut Oil", price: 350, unit: "500ml", img: coconutOilImg, rating: 4.8 },
+    { id: 703, name: "Jaggery Powder", price: 80, unit: "kg", img: jaggeryImg, rating: 4.9 },
+    { id: 704, name: "Organic Brown Sugar", price: 120, unit: "kg", img: brownSugarImg, rating: 4.7 },
+    { id: 705, name: "Rock Salt (Himalayan)", price: 60, unit: "packet", img: rockSaltImg, rating: 5.0 },
+    { id: 706, name: "Apple Cider Vinegar", price: 450, unit: "bottle", img: vinegarImg, rating: 4.8 },
   ];
 
   return (
@@ -54,7 +63,7 @@ export default function OrganicPage() {
             </div>
             <div className="relative h-64 md:h-80 perspective-1000">
               <img
-                src="https://images.unsplash.com/photo-1596700021650-77a809f4438b?q=80&w=600&auto=format&fit=crop"
+                src={heroImg}
                 alt="Organic Jars"
                 className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-700"
               />

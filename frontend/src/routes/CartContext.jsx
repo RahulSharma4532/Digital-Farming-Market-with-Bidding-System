@@ -93,6 +93,9 @@ export const CartProvider = ({ children }) => {
     }));
   };
 
+  const incrementQty = (id) => updateQuantity(id, 1);
+  const decrementQty = (id) => updateQuantity(id, -1);
+
   const clearCart = () => {
     setCartItems([]);
   };
@@ -105,6 +108,8 @@ export const CartProvider = ({ children }) => {
       addToCart,
       removeFromCart,
       updateQuantity,
+      incrementQty,
+      decrementQty,
       clearCart,
       showToast,
       toastProduct,

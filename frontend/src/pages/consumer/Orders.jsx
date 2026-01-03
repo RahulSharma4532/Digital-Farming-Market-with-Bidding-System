@@ -178,12 +178,12 @@
 // pages/consumer/Orders.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  CheckCircle, 
-  Clock, 
-  Package, 
-  Truck, 
+import {
+  ArrowLeft,
+  CheckCircle,
+  Clock,
+  Package,
+  Truck,
   MapPin,
   RefreshCw,
   ChevronRight,
@@ -196,6 +196,8 @@ import {
   MessageCircle,
   ExternalLink
 } from 'lucide-react';
+import SupportSection from '../../components/consumer/SupportSection';
+import { generateInvoice } from '../../utils/invoiceGenerator';
 
 export default function Orders() {
   const navigate = useNavigate();
@@ -204,106 +206,57 @@ export default function Orders() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // Mock orders data - In real app, fetch from API
   useEffect(() => {
-    const fetchOrders = () => {
+    const fetchOrders = async () => {
       setIsLoading(true);
-      setTimeout(() => {
-        const mockOrders = [
-          {
-            id: 'ORD-78945',
-            date: '2024-03-15',
-            time: '10:30 AM',
-            status: 'delivered',
-            deliveryDate: '2024-03-15',
-            items: [
-              { id: 1, name: 'Organic Tomatoes', qty: 2, price: 120, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=150', rating: 4.5 },
-              { id: 2, name: 'Fresh Apples - Kashmir', qty: 1, price: 180, image: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=150', rating: 4.8 }
-            ],
-            total: 420,
-            deliveryAddress: 'Green Valley Apartments, 123 Main St, Bandra West, Mumbai, Maharashtra - 400050',
-            deliveryAgent: 'Rajesh Kumar',
-            agentPhone: '+91 98765 43210',
-            paymentMethod: 'UPI',
-            paymentStatus: 'paid',
-            trackingId: 'TRK-789456123',
-            estimatedDelivery: '2-4 hours',
-            farmerDetails: [
-              { name: 'Organic Farms Coop', location: 'Nashik, Maharashtra' },
-              { name: 'Kashmir Apple Growers', location: 'Srinagar, Kashmir' }
-            ]
-          },
-          {
-            id: 'ORD-78946',
-            date: '2024-03-16',
-            time: '02:15 PM',
-            status: 'on_the_way',
-            deliveryDate: '2024-03-16',
-            items: [
-              { id: 3, name: 'Basmati Rice (Premium)', qty: 1, price: 450, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=150' },
-              { id: 4, name: 'Brown Rice (Organic)', qty: 2, price: 280, image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=150' },
-              { id: 5, name: 'Toor Dal', qty: 1, price: 120, image: 'https://images.unsplash.com/photo-1587271407850-8d6ca5c6a683?w=150' }
-            ],
-            total: 1130,
-            deliveryAddress: 'Sunrise Towers, 456 Park Avenue, Connaught Place, New Delhi - 110001',
-            deliveryAgent: 'Amit Sharma',
-            agentPhone: '+91 87654 32109',
-            paymentMethod: 'Credit Card',
-            paymentStatus: 'paid',
-            trackingId: 'TRK-456123789',
-            estimatedDelivery: '30 minutes',
-            farmerDetails: [
-              { name: 'Punjab Rice Mills', location: 'Amritsar, Punjab' }
-            ]
-          },
-          {
-            id: 'ORD-78947',
-            date: '2024-03-14',
-            time: '11:45 AM',
-            status: 'pending',
-            deliveryDate: '2024-03-14',
-            items: [
-              { id: 6, name: 'Fresh Broccoli', qty: 3, price: 60, image: 'https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=150' },
-              { id: 7, name: 'Carrots (Organic)', qty: 2, price: 40, image: 'https://images.unsplash.com/photo-1598170845058-78131a90f4bf?w=150' }
-            ],
-            total: 260,
-            deliveryAddress: 'Lakeview Residency, 789 MG Road, Bangalore, Karnataka - 560001',
-            deliveryAgent: 'Suresh Patel',
-            agentPhone: '+91 76543 21098',
-            paymentMethod: 'Cash on Delivery',
-            paymentStatus: 'pending',
-            trackingId: 'TRK-123789456',
-            estimatedDelivery: 'Processing',
-            farmerDetails: [
-              { name: 'Organic Greens Farm', location: 'Hosur, Tamil Nadu' }
-            ]
-          },
-          {
-            id: 'ORD-78948',
-            date: '2024-03-10',
-            time: '09:20 AM',
-            status: 'cancelled',
-            deliveryDate: '2024-03-10',
-            items: [
-              { id: 8, name: 'Mangoes (Alphonso)', qty: 5, price: 200, image: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=150' }
-            ],
-            total: 1000,
-            deliveryAddress: 'Seaside Apartments, 101 Marine Drive, Kochi, Kerala - 682001',
-            deliveryAgent: 'Not assigned',
-            agentPhone: null,
-            paymentMethod: 'UPI',
-            paymentStatus: 'refunded',
-            trackingId: 'TRK-987654321',
-            estimatedDelivery: 'Cancelled',
-            farmerDetails: [
-              { name: 'Konkan Mango Farms', location: 'Ratnagiri, Maharashtra' }
-            ],
-            cancellationReason: 'Out of stock'
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:5000/api/orders/my', {
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
-        ];
-        setOrders(mockOrders);
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Transform if necessary, or ensure backend matches frontend structure
+          // Backend returns: items: [{ product, name, quantity, price, image }]
+          // Frontend expects: items: [{ id, name, qty, price, image }]
+
+          const transformed = data.map(order => ({
+            id: order._id, // Use _id as id
+            date: new Date(order.createdAt).toLocaleDateString(),
+            time: new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            status: order.status,
+            deliveryDate: new Date(new Date(order.createdAt).setDate(new Date(order.createdAt).getDate() + 1)).toLocaleDateString(), // Mock Estimate
+            items: order.items.map((item, idx) => ({
+              id: item.product || idx,
+              name: item.name,
+              qty: item.quantity,
+              price: item.price,
+              image: item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150',
+              rating: 4.5
+            })),
+            total: order.totalAmount,
+            deliveryAddress: `${order.shippingAddress?.address}, ${order.shippingAddress?.city}, ${order.shippingAddress?.pincode}`,
+            deliveryAgent: 'Assisted by FarmFresh',
+            agentPhone: null,
+            paymentMethod: order.paymentMethod,
+            paymentStatus: order.paymentStatus,
+            trackingId: `TRK-${order._id.slice(-6).toUpperCase()}`,
+            estimatedDelivery: '24-48 Hours',
+            farmerDetails: [{ name: 'FarmFresh Network', location: 'India' }]
+          }));
+
+          setOrders(transformed);
+        }
+      } catch (error) {
+        console.error("Failed to fetch orders", error);
+      } finally {
         setIsLoading(false);
-      }, 1000);
+      }
     };
 
     fetchOrders();
@@ -387,8 +340,8 @@ export default function Orders() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
         <div className="bg-white px-6 py-4 border-b shadow-sm flex items-center">
-          <button 
-            onClick={() => navigate(-1)} 
+          <button
+            onClick={() => navigate(-1)}
             className="mr-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -409,8 +362,8 @@ export default function Orders() {
       <div className="bg-white px-6 py-4 border-b shadow-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center">
-            <button 
-              onClick={() => navigate(-1)} 
+            <button
+              onClick={() => navigate(-1)}
               className="mr-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -420,7 +373,7 @@ export default function Orders() {
               <p className="text-sm text-gray-500">{orders.length} total orders</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => navigate('/consumer/home')}
             className="bg-gradient-to-r from-[#1a5d36] to-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all"
           >
@@ -445,11 +398,10 @@ export default function Orders() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 py-4 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-all ${
-                    activeTab === tab.id
-                      ? `${config.textColor} border-current`
-                      : 'text-gray-500 border-transparent hover:text-gray-700'
-                  }`}
+                  className={`flex items-center gap-2 py-4 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-all ${activeTab === tab.id
+                    ? `${config.textColor} border-current`
+                    : 'text-gray-500 border-transparent hover:text-gray-700'
+                    }`}
                 >
                   {tab.id !== 'all' && config.icon}
                   <span>{tab.label}</span>
@@ -479,11 +431,11 @@ export default function Orders() {
             </div>
             <h2 className="text-3xl font-bold text-gray-800 mb-4">No orders found</h2>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              {activeTab === 'all' 
+              {activeTab === 'all'
                 ? "You haven't placed any orders yet. Start shopping for fresh farm produce!"
                 : `No ${activeTab} orders at the moment.`}
             </p>
-            <button 
+            <button
               onClick={() => navigate('/consumer/home')}
               className="bg-gradient-to-r from-[#1a5d36] to-green-600 text-white px-10 py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
             >
@@ -518,18 +470,17 @@ export default function Orders() {
                             <div className="flex items-center gap-1">
                               <CreditCard className="w-4 h-4" />
                               <span className="capitalize">{order.paymentMethod}</span>
-                              <span className={`px-2 py-0.5 rounded text-xs ${
-                                order.paymentStatus === 'paid' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-yellow-100 text-yellow-800'
-                              }`}>
+                              <span className={`px-2 py-0.5 rounded text-xs ${order.paymentStatus === 'paid'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                                }`}>
                                 {order.paymentStatus}
                               </span>
                             </div>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <div className="text-right">
                           <p className="text-sm text-gray-500">Total Amount</p>
@@ -546,7 +497,7 @@ export default function Orders() {
                         <span className="font-medium">{status.label}</span>
                       </div>
                       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className={`h-full ${status.textColor.replace('text-', 'bg-')} transition-all duration-500`}
                           style={{ width: `${status.progress}%` }}
                         />
@@ -563,8 +514,8 @@ export default function Orders() {
                       {order.items.map((item, index) => (
                         <div key={index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50">
                           <div className="w-16 h-16 rounded-lg overflow-hidden">
-                            <img 
-                              src={item.image} 
+                            <img
+                              src={item.image}
                               alt={item.name}
                               className="w-full h-full object-cover"
                               onError={(e) => {
@@ -588,7 +539,7 @@ export default function Orders() {
                           <div className="text-right">
                             <div className="font-bold">₹{item.price * item.qty}</div>
                             {order.status === 'delivered' && (
-                              <button 
+                              <button
                                 onClick={() => handleRateOrder(order)}
                                 className="text-sm text-green-600 hover:text-green-800 mt-1"
                               >
@@ -614,7 +565,7 @@ export default function Orders() {
                             <p className="text-sm text-gray-600 mt-1">{order.deliveryAddress}</p>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-3">
                           <div className="bg-green-100 p-2 rounded-lg">
                             <Truck className="w-5 h-5 text-green-600" />
@@ -655,7 +606,7 @@ export default function Orders() {
                   <div className="p-6 bg-gray-50">
                     <div className="flex flex-wrap gap-3">
                       {order.status === 'on_the_way' && (
-                        <button 
+                        <button
                           onClick={() => handleTrackOrder(order)}
                           className="flex-1 min-w-[200px] bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                         >
@@ -663,17 +614,17 @@ export default function Orders() {
                           Track Order Live
                         </button>
                       )}
-                      
+
                       {order.status === 'delivered' && (
                         <>
-                          <button 
+                          <button
                             onClick={() => handleReorder(order)}
                             className="flex-1 min-w-[200px] bg-gradient-to-r from-[#1a5d36] to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                           >
                             <Repeat className="w-5 h-5" />
                             Reorder All Items
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleRateOrder(order)}
                             className="flex-1 min-w-[200px] bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                           >
@@ -684,7 +635,7 @@ export default function Orders() {
                       )}
 
                       {order.status === 'pending' && (
-                        <button 
+                        <button
                           className="flex-1 min-w-[200px] bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                         >
                           <Clock className="w-5 h-5" />
@@ -692,7 +643,7 @@ export default function Orders() {
                         </button>
                       )}
 
-                      <button 
+                      <button
                         onClick={() => navigate(`/consumer/orders/${order.id}`)}
                         className="flex-1 min-w-[200px] border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-white transition-all flex items-center justify-center gap-2"
                       >
@@ -700,7 +651,10 @@ export default function Orders() {
                         View Details
                       </button>
 
-                      <button className="flex-1 min-w-[200px] border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-white transition-all flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => generateInvoice(order)}
+                        className="flex-1 min-w-[200px] border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-white transition-all flex items-center justify-center gap-2"
+                      >
                         <Download className="w-5 h-5" />
                         Download Invoice
                       </button>
@@ -718,30 +672,7 @@ export default function Orders() {
         )}
 
         {/* Support Card */}
-        <div className="mt-8 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl p-6">
-          <div className="flex items-start gap-4">
-            <div className="bg-blue-100 p-3 rounded-xl">
-              <Shield className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-800 mb-2">Need Help with an Order?</h3>
-              <p className="text-gray-600 mb-4">
-                Our customer support team is available 24/7 to help with any order-related queries.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <button className="bg-white border border-blue-200 text-blue-700 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                  📞 Call Support: 1800-123-4567
-                </button>
-                <button className="bg-white border border-blue-200 text-blue-700 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                  💬 Live Chat
-                </button>
-                <button className="bg-white border border-blue-200 text-blue-700 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                  📧 Email Support
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SupportSection />
       </div>
     </div>
   );

@@ -3,17 +3,25 @@ import { ShoppingCart, Star, Filter, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../routes/CartContext';
 
+// Import local images
+import milkImg from '../../assets/images/products/milk.jpg';
+import butterImg from '../../assets/images/products/organic_butter.jpg';
+import paneerImg from '../../assets/images/products/paneer.jpg';
+import yogurtImg from '../../assets/images/products/greek_yogurt.jpg';
+import gheeImg from '../../assets/images/products/buffalo_ghee.jpg';
+import cheeseImg from '../../assets/images/products/cheddar_cheese.jpg';
+
 export default function DairyProducts() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
   const products = [
-    { id: 101, name: "Fresh Cow Milk", price: 60, unit: "Litre", img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=600&auto=format&fit=crop", rating: 4.8 },
-    { id: 102, name: "Organic Butter", price: 450, unit: "500g", img: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?q=80&w=600&auto=format&fit=crop", rating: 4.9 },
-    { id: 103, name: "Farm Fresh Paneer", price: 320, unit: "kg", img: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?q=80&w=600&auto=format&fit=crop", rating: 4.7 },
-    { id: 104, name: "Greek Yogurt", price: 120, unit: "Cup", img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=600&auto=format&fit=crop", rating: 4.6 },
-    { id: 105, name: "Buffalo Ghee", price: 1100, unit: "Litre", img: "https://plus.unsplash.com/premium_photo-1664303847960-586318f59035?q=80&w=600&auto=format&fit=crop", rating: 5.0 },
-    { id: 106, name: "Cheddar Cheese", price: 400, unit: "200g", img: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?q=80&w=600&auto=format&fit=crop", rating: 4.5 },
+    { id: 101, name: "Fresh Cow Milk", price: 60, unit: "Litre", img: milkImg, rating: 4.8 },
+    { id: 102, name: "Organic Butter", price: 450, unit: "500g", img: butterImg, rating: 4.9 },
+    { id: 103, name: "Farm Fresh Paneer", price: 320, unit: "kg", img: paneerImg, rating: 4.7 },
+    { id: 104, name: "Greek Yogurt", price: 120, unit: "Cup", img: yogurtImg, rating: 4.6 },
+    { id: 105, name: "Buffalo Ghee", price: 1100, unit: "Litre", img: gheeImg, rating: 5.0 },
+    { id: 106, name: "Cheddar Cheese", price: 400, unit: "200g", img: cheeseImg, rating: 4.5 },
   ];
 
   return (
@@ -67,7 +75,14 @@ export default function DairyProducts() {
           {products.map((item) => (
             <div key={item.id} className="bg-white rounded-3xl p-4 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group">
               <div className="relative h-64 rounded-2xl overflow-hidden mb-4 bg-blue-50">
-                <img src={item.img} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                <img
+                  src={item.img}
+                  alt={item.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  onError={(e) => {
+                    e.target.src = 'https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=600&auto=format&fit=crop'; // Fallback to Milk image
+                  }}
+                />
                 <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
                   <Star className="w-3 h-3 text-yellow-500 fill-current" />
                   <span className="text-xs font-bold">{item.rating}</span>

@@ -26,14 +26,17 @@ export default function Checkout() {
   const { cartItems, cartCount, cartTotal, clearCart } = useCart();
 
   const [paymentMethod, setPaymentMethod] = useState('upi');
-  const [deliveryAddress, setDeliveryAddress] = useState({
-    name: 'John Doe',
-    phone: '+91 9876543210',
-    email: 'john@example.com',
-    address: '123 Main Street, Apartment 4B',
-    city: 'Mumbai',
-    pincode: '400001',
-    instructions: 'Leave at door if not home'
+  const [deliveryAddress, setDeliveryAddress] = useState(() => {
+    const saved = localStorage.getItem('checkoutAddress');
+    return saved ? JSON.parse(saved) : {
+      name: '',
+      phone: '',
+      email: '',
+      address: '',
+      city: '',
+      pincode: '',
+      instructions: ''
+    };
   });
   const [deliverySlot, setDeliverySlot] = useState('now');
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -49,21 +52,64 @@ export default function Checkout() {
     { id: 'custom', label: 'Schedule', time: 'Choose time', desc: 'Pick your preferred slot' }
   ];
 
-  const handleSubmitOrder = () => {
-    // In real app, this would call an API
-    console.log('Order submitted:', {
-      items: cartItems,
-      address: deliveryAddress,
-      paymentMethod,
-      deliverySlot,
-      total: totalAmount
-    });
+  // State for steps: 1 = Details, 2 = Payment
+  const [step, setStep] = useState(1);
 
-    setOrderPlaced(true);
-    setTimeout(() => {
-      clearCart();
-      navigate('/consumer/orders');
-    }, 2000);
+  const handleSubmitOrder = async () => {
+    try {
+      // Save address for next time
+      localStorage.setItem('checkoutAddress', JSON.stringify(deliveryAddress));
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert("Please login to place an order");
+        navigate('/login');
+        return;
+      }
+
+      const orderData = {
+        items: cartItems.map(item => ({
+          product: item.id.length === 24 ? item.id : null,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.img
+        })),
+        shippingAddress: deliveryAddress,
+        paymentMethod: paymentMethod,
+        totalAmount: totalAmount
+      };
+
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (response.ok) {
+        setOrderPlaced(true);
+        setTimeout(() => {
+          clearCart();
+          navigate('/consumer/orders');
+        }, 2000);
+      } else {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const error = await response.json();
+          alert(`Order Failed: ${error.message}`);
+        } else {
+          const text = await response.text();
+          console.error("Backend Error:", text);
+          alert(`Order Failed (Server Error ${response.status}): ${text.substring(0, 100)}...`);
+        }
+      }
+    } catch (error) {
+      console.error("Order error:", error);
+      alert(`Network/Client Error: ${error.message}`);
+    }
   };
 
   if (orderPlaced) {
@@ -117,14 +163,17 @@ export default function Checkout() {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center">
             <button
-              onClick={() => navigate('/consumer/cart')}
+              onClick={() => {
+                if (step === 2) setStep(1);
+                else navigate('/consumer/cart');
+              }}
               className="mr-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
               <h1 className="text-xl font-bold text-gray-800">Secure Checkout</h1>
-              <p className="text-sm text-gray-500">Complete your purchase</p>
+              <p className="text-sm text-gray-500">Step {step} of 2: {step === 1 ? "Details" : "Payment"}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -138,25 +187,23 @@ export default function Checkout() {
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between max-w-2xl mx-auto">
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold">
-                1
-              </div>
-              <span className="text-sm font-medium mt-2">Cart</span>
+            <div className={`flex flex-col items-center flex-1 ${step >= 1 ? 'text-green-600' : 'text-gray-400'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold mb-2 transition-colors ${step >= 1 ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'}`}>1</div>
+              <span className="text-sm font-medium">Details</span>
             </div>
-            <div className="h-1 w-20 bg-green-600"></div>
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold">
-                2
-              </div>
-              <span className="text-sm font-medium mt-2">Checkout</span>
+
+            <div className={`h-1 flex-1 mx-2 rounded-full ${step >= 2 ? 'bg-green-600' : 'bg-gray-200'}`}></div>
+
+            <div className={`flex flex-col items-center flex-1 ${step >= 2 ? 'text-green-600' : 'text-gray-400'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold mb-2 transition-colors ${step >= 2 ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'}`}>2</div>
+              <span className="text-sm font-medium">Payment</span>
             </div>
-            <div className="h-1 w-20 bg-gray-300"></div>
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">
-                3
-              </div>
-              <span className="text-sm text-gray-500 mt-2">Confirmation</span>
+
+            <div className={`h-1 flex-1 mx-2 rounded-full ${orderPlaced ? 'bg-green-600' : 'bg-gray-200'}`}></div>
+
+            <div className={`flex flex-col items-center flex-1 ${orderPlaced ? 'text-green-600' : 'text-gray-400'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold mb-2 transition-colors ${orderPlaced ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'}`}>3</div>
+              <span className="text-sm font-medium">Success</span>
             </div>
           </div>
         </div>
@@ -164,261 +211,210 @@ export default function Checkout() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Forms */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Delivery Information */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-green-100 p-2 rounded-lg">
-                  <User className="w-5 h-5 text-green-700" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-800">Delivery Information</h2>
-                  <p className="text-sm text-gray-600">Where should we deliver your order?</p>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Full Name</label>
-                  <div className="flex items-center border rounded-lg overflow-hidden">
-                    <div className="p-3 bg-gray-50">
-                      <User className="w-5 h-5 text-gray-500" />
+            {/* STEP 1: Delivery Information */}
+            {step === 1 && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-green-100 p-2 rounded-lg">
+                      <User className="w-5 h-5 text-green-700" />
                     </div>
-                    <input
-                      type="text"
-                      value={deliveryAddress.name}
-                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, name: e.target.value })}
-                      className="flex-1 p-3 outline-none"
-                      placeholder="Enter your name"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Phone Number</label>
-                  <div className="flex items-center border rounded-lg overflow-hidden">
-                    <div className="p-3 bg-gray-50">
-                      <Phone className="w-5 h-5 text-gray-500" />
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-800">Delivery Information</h2>
+                      <p className="text-sm text-gray-600">Where should we deliver your order?</p>
                     </div>
-                    <input
-                      type="tel"
-                      value={deliveryAddress.phone}
-                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, phone: e.target.value })}
-                      className="flex-1 p-3 outline-none"
-                      placeholder="Enter phone number"
-                    />
                   </div>
-                </div>
 
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Email Address</label>
-                  <div className="flex items-center border rounded-lg overflow-hidden">
-                    <div className="p-3 bg-gray-50">
-                      <Mail className="w-5 h-5 text-gray-500" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Full Name</label>
+                      <input
+                        type="text"
+                        value={deliveryAddress.name}
+                        onChange={(e) => setDeliveryAddress({ ...deliveryAddress, name: e.target.value })}
+                        className="w-full p-3 border rounded-lg outline-none focus:border-green-500 transition-colors bg-gray-50 focus:bg-white"
+                        placeholder="Enter your name"
+                      />
                     </div>
-                    <input
-                      type="email"
-                      value={deliveryAddress.email}
-                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, email: e.target.value })}
-                      className="flex-1 p-3 outline-none"
-                      placeholder="Enter email address"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">City</label>
-                  <div className="flex items-center border rounded-lg overflow-hidden">
-                    <div className="p-3 bg-gray-50">
-                      <MapPin className="w-5 h-5 text-gray-500" />
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Phone</label>
+                      <input
+                        type="tel"
+                        value={deliveryAddress.phone}
+                        onChange={(e) => setDeliveryAddress({ ...deliveryAddress, phone: e.target.value })}
+                        className="w-full p-3 border rounded-lg outline-none focus:border-green-500 transition-colors bg-gray-50 focus:bg-white"
+                        placeholder="Phone Number"
+                      />
                     </div>
-                    <input
-                      type="text"
-                      value={deliveryAddress.city}
-                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, city: e.target.value })}
-                      className="flex-1 p-3 outline-none"
-                      placeholder="Enter city"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Pincode</label>
-                  <div className="flex items-center border rounded-lg overflow-hidden">
-                    <div className="p-3 bg-gray-50">
-                      <Home className="w-5 h-5 text-gray-500" />
+                    <div className="md:col-span-2 space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Email</label>
+                      <input
+                        type="email"
+                        value={deliveryAddress.email}
+                        onChange={(e) => setDeliveryAddress({ ...deliveryAddress, email: e.target.value })}
+                        className="w-full p-3 border rounded-lg outline-none focus:border-green-500 transition-colors bg-gray-50 focus:bg-white"
+                        placeholder="Email Address"
+                      />
                     </div>
-                    <input
-                      type="text"
-                      value={deliveryAddress.pincode}
-                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, pincode: e.target.value })}
-                      className="flex-1 p-3 outline-none"
-                      placeholder="Enter pincode"
-                    />
-                  </div>
-                </div>
-
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Complete Address</label>
-                  <div className="flex border rounded-lg overflow-hidden">
-                    <div className="p-3 bg-gray-50">
-                      <MapPin className="w-5 h-5 text-gray-500" />
+                    <div className="md:col-span-2 space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Complete Address</label>
+                      <textarea
+                        value={deliveryAddress.address}
+                        onChange={(e) => setDeliveryAddress({ ...deliveryAddress, address: e.target.value })}
+                        className="w-full p-3 border rounded-lg outline-none focus:border-green-500 transition-colors bg-gray-50 focus:bg-white resize-none"
+                        rows="3"
+                        placeholder="House no., Building, Street, Area"
+                      />
                     </div>
-                    <textarea
-                      value={deliveryAddress.address}
-                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, address: e.target.value })}
-                      className="flex-1 p-3 outline-none resize-none"
-                      rows="3"
-                      placeholder="House no., Building, Street, Area"
-                    />
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">City</label>
+                      <input
+                        type="text"
+                        value={deliveryAddress.city}
+                        onChange={(e) => setDeliveryAddress({ ...deliveryAddress, city: e.target.value })}
+                        className="w-full p-3 border rounded-lg outline-none focus:border-green-500 transition-colors bg-gray-50 focus:bg-white"
+                        placeholder="City"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Pincode</label>
+                      <input
+                        type="text"
+                        value={deliveryAddress.pincode}
+                        onChange={(e) => setDeliveryAddress({ ...deliveryAddress, pincode: e.target.value })}
+                        className="w-full p-3 border rounded-lg outline-none focus:border-green-500 transition-colors bg-gray-50 focus:bg-white"
+                        placeholder="Pincode"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Delivery Instructions (Optional)</label>
-                  <textarea
-                    value={deliveryAddress.instructions}
-                    onChange={(e) => setDeliveryAddress({ ...deliveryAddress, instructions: e.target.value })}
-                    className="w-full p-3 border rounded-lg outline-none"
-                    rows="2"
-                    placeholder="e.g., Leave at door, Call before delivery, etc."
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Delivery Time */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-green-100 p-2 rounded-lg">
-                  <Calendar className="w-5 h-5 text-green-700" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-800">Delivery Time</h2>
-                  <p className="text-sm text-gray-600">When would you like to receive your order?</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {deliverySlots.map((slot) => (
-                  <div
-                    key={slot.id}
-                    onClick={() => setDeliverySlot(slot.id)}
-                    className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${deliverySlot === slot.id
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-200 hover:border-green-300'
-                      }`}
-                  >
-                    <h3 className="font-semibold text-gray-800">{slot.label}</h3>
-                    <p className="text-sm font-medium text-gray-900 mt-1">{slot.time}</p>
-                    <p className="text-xs text-gray-600 mt-1">{slot.desc}</p>
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-green-100 p-2 rounded-lg">
+                      <Calendar className="w-5 h-5 text-green-700" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-800">Delivery Slot</h2>
+                      <p className="text-sm text-gray-600">Choose your preferred time</p>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Payment Method */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-green-100 p-2 rounded-lg">
-                  <CreditCard className="w-5 h-5 text-green-700" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-800">Payment Method</h2>
-                  <p className="text-sm text-gray-600">Choose how you want to pay</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {[
-                  { id: 'upi', icon: <Smartphone />, title: 'UPI', desc: 'Google Pay, PhonePe, Paytm', popular: true },
-                  { id: 'cards', icon: <CreditCard />, title: 'Credit/Debit Card', desc: 'Visa, Mastercard, RuPay' },
-                  { id: 'cod', icon: <Wallet />, title: 'Cash on Delivery', desc: 'Pay when you receive' },
-                  { id: 'netbanking', icon: <CreditCard />, title: 'Net Banking', desc: 'All major banks' },
-                ].map((method) => (
-                  <div
-                    key={method.id}
-                    onClick={() => setPaymentMethod(method.id)}
-                    className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === method.id
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-200 hover:border-green-300'
-                      }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`p-2 rounded-lg ${paymentMethod === method.id ? 'bg-green-100' : 'bg-gray-100'
-                        }`}>
-                        {method.icon}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {deliverySlots.map((slot) => (
+                      <div
+                        key={slot.id}
+                        onClick={() => setDeliverySlot(slot.id)}
+                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${deliverySlot === slot.id
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-200 hover:border-green-300'
+                          }`}
+                      >
+                        <h3 className="font-semibold text-gray-800 text-sm">{slot.label}</h3>
+                        <p className="text-xs text-green-700 font-medium mt-1">{slot.time}</p>
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-gray-800">{method.title}</h3>
-                          {method.popular && (
-                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                              Popular
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-600">{method.desc}</p>
-                      </div>
-                      <div className={`w-5 h-5 rounded-full border-2 ${paymentMethod === method.id
-                        ? 'border-green-500 bg-green-500'
-                        : 'border-gray-300'
-                        }`}>
-                        {paymentMethod === method.id && (
-                          <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* UPI QR Code Scanner */}
-            {paymentMethod === 'upi' && (
-              <div className="mt-6 p-6 bg-white border-2 border-green-500 border-dashed rounded-xl flex flex-col items-center text-center animate-in fade-in slide-in-from-top-4">
-                <h3 className="font-bold text-gray-800 mb-2">Scan & Pay ₹{totalAmount}</h3>
-                <p className="text-sm text-gray-600 mb-4">Scan this QR code with any UPI app to pay instantly</p>
-
-                <div className="bg-white p-4 rounded-xl shadow-md border mb-4">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                      `upi://pay?pa=rahulsharma4898@ibl&pn=FarmFresh&am=${totalAmount}&cu=INR`
-                    )}`}
-                    alt="UPI QR Code"
-                    className="w-48 h-48 object-contain"
-                  />
                 </div>
-
-                <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-4 py-2 rounded-full">
-                  <Smartphone className="w-4 h-4" />
-                  <span>UPI ID: rahulsharma4898@ibl</span>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Payment will be verified automatically after you complete the transaction.
-                </p>
               </div>
             )}
 
-            {/* Security Note */}
-            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
-              <div className="flex items-start gap-4">
-                <Lock className="w-6 h-6 text-blue-600 flex-shrink-0" />
-                <div>
-                  <h3 className="font-bold text-gray-800 mb-2">100% Secure Payment</h3>
-                  <p className="text-sm text-gray-600">
-                    Your payment information is encrypted and secure. We don't store your card details.
-                    All transactions are protected by SSL encryption and PCI DSS compliance.
-                  </p>
+
+            {/* STEP 2: Payment Method */}
+            {step === 2 && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-green-100 p-2 rounded-lg">
+                      <CreditCard className="w-5 h-5 text-green-700" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-800">Payment Method</h2>
+                      <p className="text-sm text-gray-600">Secure encryption with SSL</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {[
+                      { id: 'upi', icon: <Smartphone />, title: 'UPI', desc: 'Google Pay, PhonePe, Paytm', popular: true },
+                      { id: 'cards', icon: <CreditCard />, title: 'Credit/Debit Card', desc: 'Visa, Mastercard, RuPay' },
+                      { id: 'cod', icon: <Wallet />, title: 'Cash on Delivery', desc: 'Pay when you receive' },
+                      { id: 'netbanking', icon: <CreditCard />, title: 'Net Banking', desc: 'All major banks' },
+                    ].map((method) => (
+                      <div
+                        key={method.id}
+                        onClick={() => setPaymentMethod(method.id)}
+                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === method.id
+                          ? 'border-green-500 bg-green-50 shadow-md transform scale-[1.01]'
+                          : 'border-gray-200 hover:border-green-300'
+                          }`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`p-2 rounded-lg ${paymentMethod === method.id ? 'bg-green-100' : 'bg-gray-100'
+                            }`}>
+                            {method.icon}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold text-gray-800">{method.title}</h3>
+                              {method.popular && (
+                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                                  Popular
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600">{method.desc}</p>
+                          </div>
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === method.id
+                            ? 'border-green-500 bg-green-500'
+                            : 'border-gray-300'
+                            }`}>
+                            {paymentMethod === method.id && (
+                              <div className="w-2 h-2 rounded-full bg-white"></div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+                {/* UPI QR Display if Selected */}
+                {paymentMethod === 'upi' && (
+                  <div className="p-6 bg-white border-2 border-green-500 border-dashed rounded-xl flex flex-col items-center text-center animate-in zoom-in duration-300 shadow-sm">
+                    <h3 className="font-bold text-gray-800 mb-2">Scan & Pay ₹{totalAmount}</h3>
+                    <p className="text-sm text-gray-600 mb-4">Scan using any UPI app</p>
+
+                    <div className="bg-white p-4 rounded-xl shadow-md border mb-4">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                          `upi://pay?pa=rahulsharma4898@ibl&pn=FarmFresh&am=${totalAmount}&cu=INR`
+                        )}`}
+                        alt="UPI QR Code"
+                        className="w-48 h-48 object-contain"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-4 py-2 rounded-full mb-4">
+                      <Smartphone className="w-4 h-4" />
+                      <span>rahulsharma4898@ibl</span>
+                    </div>
+
+                    <button
+                      onClick={handleSubmitOrder}
+                      className="w-full max-w-xs px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors shadow-lg shadow-green-200"
+                    >
+                      Click here to Simulate Success
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
+
           </div>
 
-          {/* Right Column - Order Summary */}
+          {/* Right Column - Order Summary - PERSISTENT */}
           <div className="space-y-6">
-            {/* Order Summary */}
             <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
               <h2 className="text-lg font-bold text-gray-800 mb-6">Order Summary</h2>
 
@@ -435,25 +431,19 @@ export default function Checkout() {
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm truncate">{item.name}</p>
                       <p className="text-sm text-gray-500">
-                        {item.qty} × ₹{item.price}
+                        {item.quantity} × ₹{item.price}
                       </p>
                     </div>
                     <div className="font-semibold">
-                      ₹{item.price * item.qty}
+                      ₹{item.price * item.quantity}
                     </div>
                   </div>
                 ))}
-
-                {cartItems.length > 3 && (
-                  <div className="text-center text-sm text-gray-500 py-2 border-t">
-                    + {cartItems.length - 3} more items
-                  </div>
-                )}
               </div>
 
               <div className="space-y-3 border-t pt-4">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal ({cartCount} items)</span>
+                  <span className="text-gray-600">Subtotal</span>
                   <span>₹{cartTotal}</span>
                 </div>
                 <div className="flex justify-between">
@@ -466,74 +456,39 @@ export default function Checkout() {
                   <span className="text-gray-600">Taxes (5%)</span>
                   <span>₹{calculateTax()}</span>
                 </div>
-
-                {cartTotal < 300 && (
-                  <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                    Add ₹{300 - cartTotal} more for free delivery
-                  </div>
-                )}
-
                 <div className="border-t pt-4">
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total Amount</span>
                     <span className="text-green-700">₹{totalAmount}</span>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">Inclusive of all taxes</p>
                 </div>
               </div>
 
-              <button
-                onClick={handleSubmitOrder}
-                disabled={!deliveryAddress.name || !deliveryAddress.phone || !deliveryAddress.address}
-                className={`w-full mt-6 py-4 rounded-xl font-bold transition-all duration-300 ${!deliveryAddress.name || !deliveryAddress.phone || !deliveryAddress.address
-                  ? 'bg-gray-300 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#1a5d36] to-green-600 hover:shadow-lg hover:scale-[1.02] text-white'
-                  }`}
-              >
-                Place Order & Pay
-              </button>
-
-              <div className="mt-6 space-y-3">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Truck className="w-4 h-4 text-green-600" />
-                  <span>Delivery within 2-4 hours</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Shield className="w-4 h-4 text-green-600" />
-                  <span>Secure payment • SSL encrypted</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                  <span>100% Freshness Guarantee</span>
-                </div>
-              </div>
+              {/* Dynamic Button based on Step */}
+              {step === 1 ? (
+                <button
+                  onClick={() => setStep(2)}
+                  disabled={!deliveryAddress.name || !deliveryAddress.phone || !deliveryAddress.address}
+                  className={`w-full mt-6 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 ${!deliveryAddress.name || !deliveryAddress.phone || !deliveryAddress.address
+                    ? 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-[#1a5d36] hover:bg-green-800 text-white shadow-lg'
+                    }`}
+                >
+                  Continue to Payment <ChevronRight className="w-5 h-5" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleSubmitOrder}
+                  className="w-full mt-6 py-4 rounded-xl font-bold bg-gradient-to-r from-[#1a5d36] to-green-600 hover:shadow-lg hover:scale-[1.02] text-white transition-all duration-300 shadow-green-200"
+                >
+                  Place Order & Pay ₹{totalAmount}
+                </button>
+              )}
 
               <div className="mt-6 pt-6 border-t">
                 <p className="text-sm text-gray-500 text-center">
-                  By placing your order, you agree to our Terms of Service and Privacy Policy
+                  {step === 1 ? "Next: Secure Payment" : "Secure 256-bit SSL Encrypted"}
                 </p>
-              </div>
-            </div>
-
-            {/* Support */}
-            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl p-6">
-              <h3 className="font-bold text-gray-800 mb-2">Need Help?</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Our customer support team is here to help!
-              </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium">+91 1800-123-4567</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm">support@farmfresh.com</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm">24/7 Support Available</span>
-                </div>
               </div>
             </div>
           </div>

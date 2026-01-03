@@ -12,8 +12,8 @@ export default function Fruits() {
     { id: 202, name: "Nagpur Oranges", price: 60, unit: "kg", img: "https://images.unsplash.com/photo-1547514701-42782101795e?q=80&w=600&auto=format&fit=crop", rating: 4.7 },
     { id: 203, name: "Strawberries", price: 120, unit: "box", img: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=600&auto=format&fit=crop", rating: 4.8 },
     { id: 204, name: "Alphonso Mangoes", price: 800, unit: "dozen", img: "https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=600&auto=format&fit=crop", rating: 5.0 },
-    { id: 205, name: "Bananas", price: 40, unit: "dozen", img: "https://images.unsplash.com/photo-1571771896020-2d8fc9ee2d98?q=80&w=600&auto=format&fit=crop", rating: 4.6 },
-    { id: 206, name: "Pomegranates", price: 150, unit: "kg", img: "https://images.unsplash.com/photo-1541345218768-45037d0c3c54?q=80&w=600&auto=format&fit=crop", rating: 4.8 },
+    { id: 205, name: "Bananas", price: 40, unit: "dozen", img: "https://images.unsplash.com/photo-1603833665858-e61d17a86224?q=80&w=600&auto=format&fit=crop", rating: 4.6 },
+    { id: 206, name: "Pomegranates", price: 150, unit: "kg", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Pomegranate_fruit_and_seeds.jpg/640px-Pomegranate_fruit_and_seeds.jpg", rating: 4.8 },
   ];
 
   return (
@@ -67,7 +67,14 @@ export default function Fruits() {
           {products.map((item) => (
             <div key={item.id} className="bg-white rounded-3xl p-4 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group">
               <div className="relative h-64 rounded-2xl overflow-hidden mb-4 bg-orange-50">
-                <img src={item.img} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                <img
+                  src={item.img}
+                  alt={item.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  onError={(e) => {
+                    e.target.src = 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=600&auto=format&fit=crop'; // Fallback
+                  }}
+                />
                 <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
                   <Star className="w-3 h-3 text-yellow-500 fill-current" />
                   <span className="text-xs font-bold">{item.rating}</span>

@@ -12,6 +12,7 @@ import OrganicPage from "../pages/consumer/Organic";
 import SeedsPage from "../pages/consumer/Seeds&Plants";
 import SpicesPage from "../pages/consumer/Spices";
 import HerbsPage from "../pages/consumer/FreshHerbs";
+import ExoticFruits from "../pages/consumer/ExoticFruits";
 import Orders from "../pages/consumer/Orders";
 import Checkout from "../pages/consumer/Checkout";
 import ConsumerProfile from "../pages/consumer/Profile";
@@ -24,6 +25,7 @@ import FarmerVerification from "../pages/admin/FarmerVerification";
 import PlatformRevenue from "../pages/admin/PlatformRevenue";
 import UserManagement from "../pages/admin/UserManagement";
 import AdminLiveMonitor from "../pages/admin/AdminLiveMonitor"; // Imported Monitor
+import AdminConfig from "../pages/admin/AdminConfig";
 import FarmerLayout from "../pages/farmer/FarmerLayout";
 import FarmerDashboard from "../pages/farmer/FarmerDashboard";
 import FarmerBidding from "../pages/farmer/FarmerBidding";
@@ -63,6 +65,7 @@ export default function AppRouter() {
             <Route path="/consumer/seeds" element={<SeedsPage />} />
             <Route path="/consumer/spices" element={<SpicesPage />} />
             <Route path="/consumer/herbs" element={<HerbsPage />} />
+            <Route path="/consumer/exotic" element={<ExoticFruits />} />
             <Route path="/consumer/cart" element={<Cart />} />
             <Route path="/consumer/orders" element={<Orders />} />
             <Route path="/consumer/checkout" element={<Checkout />} />
@@ -81,6 +84,7 @@ export default function AppRouter() {
             <Route path="/admin/revenue" element={<PlatformRevenue />} />
             <Route path="/admin/users" element={<UserManagement />} />
             <Route path="/admin/live" element={<AdminLiveMonitor />} /> {/* New Admin Route */}
+            <Route path="/admin/config" element={<AdminConfig />} />
 
             {/* Farmer Routes */}
             <Route path="/farmer" element={<FarmerLayout />}>

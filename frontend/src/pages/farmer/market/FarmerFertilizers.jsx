@@ -3,15 +3,21 @@ import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../routes/CartContext';
 
+// Import local images
+import ureaImg from '../../../assets/images/products/farmer_urea.jpg';
+import dapImg from '../../../assets/images/products/farmer_dap.jpg';
+import compostImg from '../../../assets/images/products/farmer_vermicompost.jpg';
+import potashImg from '../../../assets/images/products/farmer_potash.jpg';
+
 export default function FarmerFertilizers() {
     const navigate = useNavigate();
     const { addToCart } = useCart();
 
     const products = [
-        { id: 'f1', name: "Urea (Neem Coated)", price: 266, unit: "45kg", rating: 4.9, img: "https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?q=80&w=600&auto=format&fit=crop" },
-        { id: 'f2', name: "DAP (Di-ammonium Phosphate)", price: 1350, unit: "50kg", rating: 4.8, img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=600&auto=format&fit=crop" },
-        { id: 'f3', name: "Organic Vermicompost", price: 300, unit: "25kg", rating: 4.9, img: "https://images.unsplash.com/photo-1605342279762-b91c015b3260?q=80&w=600&auto=format&fit=crop" },
-        { id: 'f4', name: "Potash (MOP)", price: 1700, unit: "50kg", rating: 4.7, img: "https://images.unsplash.com/photo-1595855709940-5100d11b3d6d?q=80&w=600&auto=format&fit=crop" },
+        { id: 'f1', name: "Urea (Neem Coated)", price: 266, unit: "45kg", rating: 4.9, img: ureaImg },
+        { id: 'f2', name: "DAP (Di-ammonium Phosphate)", price: 1350, unit: "50kg", rating: 4.8, img: dapImg },
+        { id: 'f3', name: "Organic Vermicompost", price: 300, unit: "25kg", rating: 4.9, img: compostImg },
+        { id: 'f4', name: "Potash (MOP)", price: 1700, unit: "50kg", rating: 4.7, img: potashImg },
     ];
 
     return (

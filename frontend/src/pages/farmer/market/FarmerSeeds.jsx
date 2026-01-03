@@ -3,17 +3,25 @@ import { ShoppingCart, Star, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../routes/CartContext'; // Reuse Cart Context for simplicity or create new one
 
+// Import local images
+import tomatoImg from '../../../assets/images/products/farmer_tomato_seeds.jpg';
+import riceImg from '../../../assets/images/products/farmer_rice_seeds.jpg';
+import wheatImg from '../../../assets/images/products/farmer_wheat_seeds.jpg';
+import cottonImg from '../../../assets/images/products/farmer_cotton_seeds.jpg';
+import mangoImg from '../../../assets/images/products/farmer_mango_sapling.jpg';
+import coconutImg from '../../../assets/images/products/farmer_coconut_sapling.jpg';
+
 export default function FarmerSeeds() {
     const navigate = useNavigate();
     const { addToCart } = useCart();
 
     const products = [
-        { id: 's1', name: "Hybrid Tomato Seeds", price: 450, unit: "pack", rating: 4.8, img: "https://images.unsplash.com/photo-1599818987482-143003b3846e?q=80&w=600&auto=format&fit=crop" },
-        { id: 's2', name: "Basmati Rice Seeds", price: 1200, unit: "kg", rating: 4.9, img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=600&auto=format&fit=crop" },
-        { id: 's3', name: "Wheat Seeds (HD-2967)", price: 800, unit: "kg", rating: 4.7, img: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?q=80&w=600&auto=format&fit=crop" },
-        { id: 's4', name: "Cotton Seeds", price: 2500, unit: "pack", rating: 4.6, img: "https://images.unsplash.com/photo-1605342279762-b91c015b3260?q=80&w=600&auto=format&fit=crop" },
-        { id: 's5', name: "Mango Sapling (Alphonso)", price: 150, unit: "pc", rating: 4.9, img: "https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=600&auto=format&fit=crop" },
-        { id: 's6', name: "Coconut Sapling", price: 200, unit: "pc", rating: 4.8, img: "https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=600&auto=format&fit=crop" },
+        { id: 's1', name: "Hybrid Tomato Seeds", price: 450, unit: "pack", rating: 4.8, img: tomatoImg },
+        { id: 's2', name: "Basmati Rice Seeds", price: 1200, unit: "kg", rating: 4.9, img: riceImg },
+        { id: 's3', name: "Wheat Seeds (HD-2967)", price: 800, unit: "kg", rating: 4.7, img: wheatImg },
+        { id: 's4', name: "Cotton Seeds", price: 2500, unit: "pack", rating: 4.6, img: cottonImg },
+        { id: 's5', name: "Mango Sapling (Alphonso)", price: 150, unit: "pc", rating: 4.9, img: mangoImg },
+        { id: 's6', name: "Coconut Sapling", price: 200, unit: "pc", rating: 4.8, img: coconutImg },
     ];
 
     return (

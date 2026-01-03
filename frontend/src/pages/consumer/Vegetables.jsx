@@ -49,6 +49,14 @@ import Potato from '../../assets/images/potatoes.jpg';
 import SweetCorn from '../../assets/images/sweetcorn.jpg';
 
 
+import Zucchini from '../../assets/images/products/zucchini.jpg';
+import RawBanana from '../../assets/images/products/raw_banana.jpg';
+import Drumstick from '../../assets/images/products/drumstick.jpg';
+import ClusterBeans from '../../assets/images/products/cluster_beans.jpg';
+import SnakeGourd from '../../assets/images/products/snake_gourd.jpg';
+import PointedGourd from '../../assets/images/products/pointed_gourd.jpg';
+
+
 export default function Vegetables() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
@@ -98,13 +106,13 @@ export default function Vegetables() {
     { id: 141, name: "Lettuce (Salaad Patta)", price: 80, unit: "kg", img: Lettuce, rating: 4.6 },
     { id: 142, name: "Snow Peas (Matar Phali)", price: 120, unit: "kg", img: SnowPeas, rating: 4.8 },
     { id: 143, name: "New Potato (Naya Aloo)", price: 35, unit: "kg", img: NewPotatoes, rating: 4.8 },
-    { id: 144, name: "Zucchini (Turai Type)", price: 100, unit: "kg", img: "https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?q=80&w=600&auto=format&fit=crop", rating: 4.7 }, // Fallback for binary 'zucchini' file
+    { id: 144, name: "Zucchini (Turai Type)", price: 100, unit: "kg", img: Zucchini, rating: 4.7 },
     { id: 145, name: "Arugula (Rocket)", price: 140, unit: "kg", img: Arugula, rating: 4.8 },
-    { id: 146, name: "Raw Banana (Kaccha Kela)", price: 30, unit: "doz", img: "https://images.unsplash.com/photo-1588523788737-12711624c94c?q=80&w=600&auto=format&fit=crop", rating: 4.5 },
-    { id: 147, name: "Drumstick (Sahjan)", price: 60, unit: "kg", img: "C:\Users\rs875\OneDrive\Desktop\digitals-farmers-market-bid\frontend\src\assets\Drumsticks.jpg", rating: 4.8 },
-    { id: 148, name: "Cluster Beans (Gwar Phali)", price: 40, unit: "kg", img: "https://images.unsplash.com/photo-1626808642875-0aa545482dfb?q=80&w=600&auto=format&fit=crop", rating: 4.6 },
-    { id: 149, name: "Snake Gourd (Chichinda)", price: 45, unit: "kg", img: "https://images.unsplash.com/photo-1594291030467-3c58807d4715?q=80&w=600&auto=format&fit=crop", rating: 4.5 },
-    { id: 150, name: "Pointed Gourd (Parwal)", price: 80, unit: "kg", img: "https://images.unsplash.com/photo-1596395914652-32a26c483259?q=80&w=600&auto=format&fit=crop", rating: 4.7 },
+    { id: 146, name: "Raw Banana (Kaccha Kela)", price: 30, unit: "doz", img: RawBanana, rating: 4.5 },
+    { id: 147, name: "Drumstick (Sahjan)", price: 60, unit: "kg", img: Drumstick, rating: 4.8 },
+    { id: 148, name: "Cluster Beans (Gwar Phali)", price: 40, unit: "kg", img: ClusterBeans, rating: 4.6 },
+    { id: 149, name: "Snake Gourd (Chichinda)", price: 45, unit: "kg", img: SnakeGourd, rating: 4.5 },
+    { id: 150, name: "Pointed Gourd (Parwal)", price: 80, unit: "kg", img: PointedGourd, rating: 4.7 },
   ];
 
   const filteredProducts = allProducts.filter(p =>

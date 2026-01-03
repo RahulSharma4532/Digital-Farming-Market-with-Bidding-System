@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
+import { createNotification } from "./adminController.js";
 
 export const register = async (req, res) => {
   try {
@@ -19,7 +20,24 @@ export const register = async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password: hashed, role });
 
+
     if (user) {
+      // Notify Admin if Farmer Registers
+      if (role === 'farmer') {
+        const notif = await createNotification(
+          "New Farmer Registration",
+          `Farmer ${name} has registered and awaits verification.`,
+          "warning",
+          "/admin/farmer-verification"
+        );
+
+        const io = req.app.get("io");
+        if (io && notif) {
+          io.emit("admin_notification", notif);
+          // Also emit stats update if needed, but client polls or we can emit 'stats_update'
+        }
+      }
+
       res.status(201).json({
         token: generateToken(user._id, user.role),
         user: {

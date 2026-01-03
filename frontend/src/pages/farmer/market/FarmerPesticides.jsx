@@ -3,14 +3,19 @@ import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../routes/CartContext';
 
+// Import local images
+import neemImg from '../../../assets/images/products/neem_oil.jpg';
+import fungicideImg from '../../../assets/images/products/fungicide.jpg';
+import weedicideImg from '../../../assets/images/products/weedicide.jpg';
+
 export default function FarmerPesticides() {
     const navigate = useNavigate();
     const { addToCart } = useCart();
 
     const products = [
-        { id: 'p1', name: "Neem Oil (Organic)", price: 400, unit: "L", rating: 4.9, img: "https://images.unsplash.com/photo-1615485925694-a031e34b9b66?q=80&w=600&auto=format&fit=crop" },
-        { id: 'p2', name: "Fungicide (Mancozeb)", price: 650, unit: "kg", rating: 4.7, img: "https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=600&auto=format&fit=crop" },
-        { id: 'p3', name: "Weedicide (Glyphosate)", price: 800, unit: "L", rating: 4.6, img: "https://images.unsplash.com/photo-1596700021650-77a809f4438b?q=80&w=600&auto=format&fit=crop" },
+        { id: 'p1', name: "Neem Oil (Organic)", price: 400, unit: "L", rating: 4.9, img: neemImg },
+        { id: 'p2', name: "Fungicide (Mancozeb)", price: 650, unit: "kg", rating: 4.7, img: fungicideImg },
+        { id: 'p3', name: "Weedicide (Glyphosate)", price: 800, unit: "L", rating: 4.6, img: weedicideImg },
     ];
 
     return (

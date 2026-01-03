@@ -3,17 +3,26 @@ import { ShoppingCart, Star, Filter, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../routes/CartContext';
 
+// Import local images
+import turmericImg from '../../assets/images/products/turmeric_powder.jpg';
+import chilliImg from '../../assets/images/products/red_chilli_powder.jpg';
+import corianderImg from '../../assets/images/products/coriander_powder.jpg';
+import cuminImg from '../../assets/images/products/cumin_seeds.jpg';
+import pepperImg from '../../assets/images/products/black_pepper.jpg';
+import cardamomImg from '../../assets/images/products/cardamom.jpg';
+import heroImg from '../../assets/images/products/spices_hero.jpg';
+
 export default function Spices() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
   const products = [
-    { id: 501, name: "Turmeric Powder", price: 120, unit: "250g", img: "https://images.unsplash.com/photo-1615485500704-8e99099d9d3f?q=80&w=600&auto=format&fit=crop", rating: 4.8 },
-    { id: 502, name: "Red Chilli Powder", price: 150, unit: "250g", img: "https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?q=80&w=600&auto=format&fit=crop", rating: 4.9 },
-    { id: 503, name: "Coriander Powder", price: 100, unit: "250g", img: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=600&auto=format&fit=crop", rating: 4.7 },
-    { id: 504, name: "Cumin Seeds (Jeera)", price: 180, unit: "250g", img: "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?q=80&w=600&auto=format&fit=crop", rating: 4.6 },
-    { id: 505, name: "Black Pepper", price: 250, unit: "100g", img: "https://images.unsplash.com/photo-1564149504817-d1378368526f?q=80&w=600&auto=format&fit=crop", rating: 5.0 },
-    { id: 506, name: "Cardamom", price: 400, unit: "50g", img: "https://images.unsplash.com/photo-1550732890-3490b4353381?q=80&w=600&auto=format&fit=crop", rating: 4.9 },
+    { id: 501, name: "Turmeric Powder", price: 120, unit: "250g", img: turmericImg, rating: 4.8 },
+    { id: 502, name: "Red Chilli Powder", price: 150, unit: "250g", img: chilliImg, rating: 4.9 },
+    { id: 503, name: "Coriander Powder", price: 100, unit: "250g", img: corianderImg, rating: 4.7 },
+    { id: 504, name: "Cumin Seeds (Jeera)", price: 180, unit: "250g", img: cuminImg, rating: 4.6 },
+    { id: 505, name: "Black Pepper", price: 250, unit: "100g", img: pepperImg, rating: 5.0 },
+    { id: 506, name: "Cardamom", price: 400, unit: "50g", img: cardamomImg, rating: 4.9 },
   ];
 
   return (
@@ -54,7 +63,7 @@ export default function Spices() {
             </div>
             <div className="relative h-64 md:h-80 perspective-1000">
               <img
-                src="https://images.unsplash.com/photo-1532336414038-cf00d4722915?q=80&w=600&auto=format&fit=crop"
+                src={heroImg}
                 alt="Spices Spoons"
                 className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-700"
               />

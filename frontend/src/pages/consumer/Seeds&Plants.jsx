@@ -3,17 +3,26 @@ import { ShoppingCart, Star, Filter, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../routes/CartContext';
 
+// Import local images
+import tomatoImg from '../../assets/images/products/tomato_seeds.jpg';
+import marigoldImg from '../../assets/images/products/marigold_seeds.jpg';
+import corianderImg from '../../assets/images/products/coriander_seeds.jpg';
+import aloeImg from '../../assets/images/products/aloe_vera.jpg';
+import moneyPlantImg from '../../assets/images/products/money_plant.jpg';
+import snakePlantImg from '../../assets/images/products/snake_plant.jpg';
+import heroImg from '../../assets/images/products/seeds_hero.jpg';
+
 export default function SeedsPage() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
   const products = [
-    { id: 601, name: "Tomato Seeds", price: 50, unit: "packet", img: "https://images.unsplash.com/photo-1594488340776-857ae89d1b64?q=80&w=600&auto=format&fit=crop", rating: 4.8 },
-    { id: 602, name: "Marigold Seeds", price: 40, unit: "packet", img: "https://images.unsplash.com/photo-1591185567702-8d75322989b3?q=80&w=600&auto=format&fit=crop", rating: 4.7 },
-    { id: 603, name: "Coriander Seeds", price: 30, unit: "packet", img: "https://images.unsplash.com/photo-1620579048384-9de69f6e4a2d?q=80&w=600&auto=format&fit=crop", rating: 4.9 },
-    { id: 604, name: "Aloe Vera Plant", price: 150, unit: "pot", img: "https://images.unsplash.com/photo-1585672935824-00e9602e3b2e?q=80&w=600&auto=format&fit=crop", rating: 4.9 },
-    { id: 605, name: "Money Plant", price: 200, unit: "pot", img: "https://images.unsplash.com/photo-1599598425947-230d4f26f257?q=80&w=600&auto=format&fit=crop", rating: 4.6 },
-    { id: 606, name: "Snake Plant", price: 250, unit: "pot", img: "https://images.unsplash.com/photo-1590452332857-b24785461159?q=80&w=600&auto=format&fit=crop", rating: 5.0 },
+    { id: 601, name: "Tomato Seeds", price: 50, unit: "packet", img: tomatoImg, rating: 4.8 },
+    { id: 602, name: "Marigold Seeds", price: 40, unit: "packet", img: marigoldImg, rating: 4.7 },
+    { id: 603, name: "Coriander Seeds", price: 30, unit: "packet", img: corianderImg, rating: 4.9 },
+    { id: 604, name: "Aloe Vera Plant", price: 150, unit: "pot", img: aloeImg, rating: 4.9 },
+    { id: 605, name: "Money Plant", price: 200, unit: "pot", img: moneyPlantImg, rating: 4.6 },
+    { id: 606, name: "Snake Plant", price: 250, unit: "pot", img: snakePlantImg, rating: 5.0 },
   ];
 
   return (
@@ -54,7 +63,7 @@ export default function SeedsPage() {
             </div>
             <div className="relative h-64 md:h-80 perspective-1000">
               <img
-                src="https://images.unsplash.com/photo-1591857177580-dc82b9a454c3?q=80&w=600&auto=format&fit=crop"
+                src={heroImg}
                 alt="Plants Potted"
                 className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-700"
               />

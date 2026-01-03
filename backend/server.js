@@ -1,54 +1,46 @@
 import express from "express";
-import { createServer } from "http"; // Restore
-import { Server } from "socket.io"; // Restore
-// Trigger restart 5
+import { createServer } from "http";
+import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
+
 import authRoutes from "./routes/authRoutes.js";
 import auctionRoutes from "./routes/auctionRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
-// Connect to DB and start server
-const startServer = async () => {
-  try {
-    await connectDB();
-    console.log("MongoDB Connected");
-  } catch (err) {
-    console.error("MongoDB Connection Error:", err);
-  }
 
-  // Socket.io Connection (moved inside or kept outside, io is already defined)
-
-  httpServer.listen(process.env.PORT, () =>
-    console.log(`Server running on port ${process.env.PORT}`)
-  );
-};
-
-// Initialize
+// Initialize App & Server
 const app = express();
 const httpServer = createServer(app);
+
+// CORS Configuration
 const io = new Server(httpServer, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST", "PUT", "DELETE"]
   }
 });
 
-startServer();
-
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  credentials: true
+}));
 app.use(express.json());
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/auctions", auctionRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/orders", orderRoutes);
 
-// Make io accessible to our router
+// Socket.io Logic
 app.set("io", io);
 
-// Socket.io Connection
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 
@@ -57,11 +49,25 @@ io.on("connection", (socket) => {
     console.log(`User joined auction: ${room}`);
   });
 
-  // socket.on("place_bid") removed: Bids should go through API for validation
-
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
 });
 
+// Start Server
+const startServer = async () => {
+  try {
+    await connectDB();
+    console.log("MongoDB Connected");
 
+    // Standard Port Configuration
+    const PORT = process.env.PORT || 5000;
+    httpServer.listen(PORT, () =>
+      console.log(`Server running on port ${PORT}`)
+    );
+  } catch (err) {
+    console.error("MongoDB Connection Error:", err);
+  }
+};
+
+startServer();

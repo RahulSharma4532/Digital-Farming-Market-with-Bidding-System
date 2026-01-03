@@ -3,17 +3,26 @@ import { ShoppingCart, Star, Filter, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../routes/CartContext';
 
+// Import local images
+import corianderImg from '../../assets/images/products/fresh_coriander.jpg';
+import mintImg from '../../assets/images/products/mint_leaves.jpg';
+import basilImg from '../../assets/images/products/basil_leaves.jpg';
+import curryImg from '../../assets/images/products/curry_leaves.jpg';
+import rosemaryImg from '../../assets/images/products/rosemary.jpg';
+import parsleyImg from '../../assets/images/products/parsley.jpg';
+import heroImg from '../../assets/images/products/herbs_hero.jpg';
+
 export default function FreshHerbs() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
   const products = [
-    { id: 401, name: "Fresh Coriander", price: 20, unit: "bunch", img: "https://images.unsplash.com/photo-1588879464875-c5464528cdb1?q=80&w=600&auto=format&fit=crop", rating: 4.8 },
-    { id: 402, name: "Mint Leaves", price: 15, unit: "bunch", img: "https://images.unsplash.com/photo-1603048588665-791ca8aea616?q=80&w=600&auto=format&fit=crop", rating: 4.7 },
-    { id: 403, name: "Basil Leaves", price: 40, unit: "bunch", img: "https://images.unsplash.com/photo-1626808642875-0aa545482dfb?q=80&w=600&auto=format&fit=crop", rating: 4.9 },
-    { id: 404, name: "Curry Leaves", price: 10, unit: "packet", img: "https://images.unsplash.com/photo-1596395914652-32a26c483259?q=80&w=600&auto=format&fit=crop", rating: 4.6 },
-    { id: 405, name: "Rosemary", price: 60, unit: "bunch", img: "https://images.unsplash.com/photo-1515587752250-1370e047bbdc?q=80&w=600&auto=format&fit=crop", rating: 5.0 },
-    { id: 406, name: "Parsley", price: 50, unit: "bunch", img: "https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?q=80&w=600&auto=format&fit=crop", rating: 4.5 },
+    { id: 401, name: "Fresh Coriander", price: 20, unit: "bunch", img: corianderImg, rating: 4.8 },
+    { id: 402, name: "Mint Leaves", price: 15, unit: "bunch", img: mintImg, rating: 4.7 },
+    { id: 403, name: "Basil Leaves", price: 40, unit: "bunch", img: basilImg, rating: 4.9 },
+    { id: 404, name: "Curry Leaves", price: 10, unit: "packet", img: curryImg, rating: 4.6 },
+    { id: 405, name: "Rosemary", price: 60, unit: "bunch", img: rosemaryImg, rating: 5.0 },
+    { id: 406, name: "Parsley", price: 50, unit: "bunch", img: parsleyImg, rating: 4.5 },
   ];
 
   return (
@@ -54,7 +63,7 @@ export default function FreshHerbs() {
             </div>
             <div className="relative h-64 md:h-80 perspective-1000">
               <img
-                src="https://images.unsplash.com/photo-1595855709940-5100d11b3d6d?q=80&w=600&auto=format&fit=crop"
+                src={heroImg}
                 alt="Herbs Basket"
                 className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-700"
               />

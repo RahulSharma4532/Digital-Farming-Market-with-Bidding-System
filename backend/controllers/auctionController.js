@@ -157,6 +157,20 @@ export const getAllAuctions = async (req, res) => {
         res.json(auctions);
     } catch (error) {
         console.error("Error fetching all auctions:", error);
+    }
+};
+
+// Get recent bids across all auctions (for activity feed)
+export const getRecentBids = async (req, res) => {
+    try {
+        const bids = await Bid.find()
+            .populate('auction', 'product currentPrice') // Get auction details
+            .populate('bidder', 'name') // Get bidder name
+            .sort({ createdAt: -1 })
+            .limit(10); // Last 10 bids
+        res.json(bids);
+    } catch (error) {
+        console.error("Error fetching recent bids:", error);
         res.status(500).json({ message: "Server error" });
     }
 };

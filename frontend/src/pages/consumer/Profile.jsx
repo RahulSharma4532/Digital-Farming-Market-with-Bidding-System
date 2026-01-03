@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../routes/CartContext';
@@ -21,17 +21,40 @@ export default function Profile() {
     { id: 'payment', label: 'Payment', icon: <CreditCard className="w-5 h-5" /> },
     { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
   ];
+  // Fetch Orders for Profile
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem('token') || localStorage.getItem('jwt');
+        if (!token) return;
+
+        const res = await fetch('http://localhost:5000/api/orders/my', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setOrders(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile orders", error);
+      }
+    };
+    fetchOrders();
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <OverviewSection user={user} userDetails={userDetails} />;
+        return <OverviewSection user={user} userDetails={userDetails} stats={{ orderCount: orders.length }} />;
       case 'orders':
-        return <OrdersSection />;
+        return <OrdersSection orders={orders} />;
       case 'address':
         return <AddressSection userDetails={userDetails} />;
       default:
-        return <OverviewSection user={user} userDetails={userDetails} />;
+        return <OverviewSection user={user} userDetails={userDetails} stats={{ orderCount: orders.length }} />;
     }
   };
 
@@ -88,8 +111,8 @@ export default function Profile() {
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
                     className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-300 ${activeTab === item.id
-                        ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-900/50'
-                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                      ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-900/50'
+                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
                       }`}
                   >
                     <div className="flex items-center gap-3 font-medium">
@@ -131,7 +154,7 @@ const data = [
   { name: 'Sun', spend: 850 },
 ];
 
-function OverviewSection({ user, userDetails }) {
+function OverviewSection({ user, userDetails, stats }) {
   return (
     <div className="space-y-8">
       {/* 3D Stats Cards */}
@@ -142,10 +165,10 @@ function OverviewSection({ user, userDetails }) {
               <Package className="w-6 h-6" />
             </div>
             <span className="text-green-400 text-xs font-bold flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> +12%
+              <TrendingUp className="w-3 h-3" /> +100%
             </span>
           </div>
-          <h3 className="text-4xl font-bold text-white mb-1">12</h3>
+          <h3 className="text-4xl font-bold text-white mb-1">{stats?.orderCount || 0}</h3>
           <p className="text-gray-400 text-sm">Total Orders Placed</p>
         </div>
 
@@ -155,7 +178,7 @@ function OverviewSection({ user, userDetails }) {
               <Heart className="w-6 h-6" />
             </div>
           </div>
-          <h3 className="text-4xl font-bold text-white mb-1">5</h3>
+          <h3 className="text-4xl font-bold text-white mb-1">0</h3>
           <p className="text-gray-400 text-sm">Items in Wishlist</p>
         </div>
 
@@ -165,7 +188,7 @@ function OverviewSection({ user, userDetails }) {
               <CreditCard className="w-6 h-6" />
             </div>
           </div>
-          <h3 className="text-4xl font-bold text-white mb-1">₹450</h3>
+          <h3 className="text-4xl font-bold text-white mb-1">₹0</h3>
           <p className="text-gray-400 text-sm">Wallet Credits</p>
         </div>
       </div>
@@ -173,7 +196,7 @@ function OverviewSection({ user, userDetails }) {
       {/* Analytics Graph */}
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl">
         <h2 className="text-xl font-bold text-white mb-6">Spending Analysis</h2>
-        <div className="h-[300px]">
+        <div className="w-full min-h-[300px]" style={{ width: '100%', height: 300 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
               <defs>
@@ -234,32 +257,53 @@ function OverviewSection({ user, userDetails }) {
   );
 }
 
-function OrdersSection() {
+function OrdersSection({ orders }) {
   return (
     <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
       <h2 className="text-xl font-bold text-white p-8 border-b border-white/10">Order History</h2>
       <div className="divide-y divide-white/10">
-        {[1, 2, 3].map(order => (
-          <div key={order} className="p-6 flex flex-col md:flex-row gap-6 hover:bg-white/5 transition-colors cursor-pointer group">
-            <div className="w-20 h-20 bg-gray-800 rounded-xl border border-white/10 overflow-hidden">
-              <img src={`https://source.unsplash.com/random/100x100?fruit&sig=${order}`} alt="Product" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-gray-200 group-hover:text-cyan-400 transition-colors">Organic Bundle #{order}203</h3>
-              <p className="text-sm text-gray-400 mt-1">Delivered on Oct {24 - order}, 2024</p>
-              <div className="flex gap-2 mt-3">
-                <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-md border border-green-500/20">Organic</span>
-                <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md border border-blue-500/20">Verified</span>
+        {!orders || orders.length === 0 ? (
+          <div className="p-12 text-center text-gray-400">
+            <Package className="w-16 h-16 mx-auto mb-4 opacity-50" />
+            <p className="text-lg">No orders found.</p>
+            <p className="text-sm">Your order history will appear here once you place an order.</p>
+          </div>
+        ) : (
+          orders.map(order => (
+            <div key={order._id} className="p-6 flex flex-col md:flex-row gap-6 hover:bg-white/5 transition-colors cursor-pointer group">
+              <div className="w-20 h-20 bg-gray-800 rounded-xl border border-white/10 overflow-hidden">
+                <img
+                  src={order.items && order.items[0] && order.items[0].image ? order.items[0].image : "https://via.placeholder.com/100"}
+                  alt="Product"
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-200 group-hover:text-cyan-400 transition-colors">
+                  Order #{order._id.slice(-6).toUpperCase()}
+                </h3>
+                <p className="text-sm text-gray-300 font-medium">
+                  {order.items.length} Items • {order.items.map(i => i.name).join(", ").slice(0, 30)}...
+                </p>
+                <p className="text-sm text-gray-400 mt-1">Placed on {new Date(order.createdAt).toLocaleDateString()}</p>
+                <div className="flex gap-2 mt-3">
+                  <span className={`text-xs px-2 py-1 rounded-md border ${order.status === 'delivered' ? 'bg-green-500/20 text-green-400 border-green-500/20' :
+                    order.status === 'pending' ? 'bg-orange-500/20 text-orange-400 border-orange-500/20' :
+                      'bg-blue-500/20 text-blue-400 border-blue-500/20'
+                    }`}>
+                    {order.status ? order.status.toUpperCase() : 'PENDING'}
+                  </span>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-white">₹{order.totalAmount}</p>
+                <p className="text-xs text-green-400 font-bold uppercase tracking-wide mt-1 flex items-center justify-end gap-1">
+                  <Shield className="w-3 h-3" /> {order.paymentStatus}
+                </p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-xl font-bold text-white">₹450.00</p>
-              <p className="text-xs text-green-400 font-bold uppercase tracking-wide mt-1 flex items-center justify-end gap-1">
-                <Shield className="w-3 h-3" /> Delivered
-              </p>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

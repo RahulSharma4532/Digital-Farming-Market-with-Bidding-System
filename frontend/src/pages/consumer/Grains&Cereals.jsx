@@ -3,6 +3,10 @@ import { ShoppingCart, Star, Filter, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../routes/CartContext';
 
+// Import local images
+import quinoaImg from '../../assets/images/products/quinoa.jpg';
+import oatsImg from '../../assets/images/products/rolled_oats.jpg';
+
 export default function GrainsAndCereals() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
@@ -10,9 +14,9 @@ export default function GrainsAndCereals() {
   const products = [
     { id: 301, name: "Basmati Rice", price: 150, unit: "kg", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=600&auto=format&fit=crop", rating: 4.8 },
     { id: 302, name: "Whole Wheat Flour", price: 40, unit: "kg", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=600&auto=format&fit=crop", rating: 4.7 },
-    { id: 303, name: "Organic Quinoa", price: 350, unit: "kg", img: "https://images.unsplash.com/photo-1586201375807-6c3f68d907f9?q=80&w=600&auto=format&fit=crop", rating: 4.9 },
+    { id: 303, name: "Organic Quinoa", price: 350, unit: "kg", img: quinoaImg, rating: 4.9 },
     { id: 304, name: "Corn Maize", price: 30, unit: "kg", img: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?q=80&w=600&auto=format&fit=crop", rating: 4.5 },
-    { id: 305, name: "Rolled Oats", price: 180, unit: "kg", img: "https://images.unsplash.com/photo-1614252369408-da6f51cb326e?q=80&w=600&auto=format&fit=crop", rating: 4.6 },
+    { id: 305, name: "Rolled Oats", price: 180, unit: "kg", img: oatsImg, rating: 4.6 },
   ];
 
   return (
@@ -66,7 +70,14 @@ export default function GrainsAndCereals() {
           {products.map((item) => (
             <div key={item.id} className="bg-white rounded-3xl p-4 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group">
               <div className="relative h-64 rounded-2xl overflow-hidden mb-4 bg-yellow-50">
-                <img src={item.img} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                <img
+                  src={item.img}
+                  alt={item.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  onError={(e) => {
+                    e.target.src = 'https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=600&auto=format&fit=crop'; // Fallback to Rice image
+                  }}
+                />
                 <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
                   <Star className="w-3 h-3 text-yellow-500 fill-current" />
                   <span className="text-xs font-bold">{item.rating}</span>
