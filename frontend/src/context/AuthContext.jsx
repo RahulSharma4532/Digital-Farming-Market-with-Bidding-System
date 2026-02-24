@@ -38,7 +38,11 @@ export const AuthProvider = ({ children }) => {
                 body: JSON.stringify({ email, password }),
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(async (e) => {
+                const text = await response.text();
+                console.error("Failed to parse JSON. Status:", response.status, "Body:", text.slice(0, 200));
+                throw new Error(`Server returned invalid response (${response.status}). Check API URL: ${API_URL}`);
+            });
             console.log("Login API Response:", data); // Debug Log
 
             if (!response.ok) {
@@ -68,7 +72,11 @@ export const AuthProvider = ({ children }) => {
                 body: JSON.stringify({ name, email, password, role }),
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(async (e) => {
+                const text = await response.text();
+                console.error("Failed to parse JSON. Status:", response.status, "Body:", text.slice(0, 200));
+                throw new Error(`Server returned invalid response (${response.status}). Check API URL: ${BASE_URL}`);
+            });
             console.log("Register API Response:", data); // Debug Log
 
             if (!response.ok) {
