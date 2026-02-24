@@ -19,7 +19,8 @@ export default function Disputes() {
   const fetchDisputes = async () => {
     try {
       const token = localStorage.getItem('jwt');
-      const res = await fetch('http://localhost:5000/api/admin/disputes', {
+      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${BASE_URL}/admin/disputes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -36,7 +37,8 @@ export default function Disputes() {
   const handleResolve = async (id, status, resolutionText) => {
     try {
       const token = localStorage.getItem('jwt');
-      await fetch(`http://localhost:5000/api/admin/disputes/${id}/resolve`, {
+      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      await fetch(`${BASE_URL}/admin/disputes/${id}/resolve`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -123,8 +125,8 @@ function DisputeCard({ dispute, onResolve }) {
       <div className="flex justify-between items-start">
         <div className="flex gap-4">
           <div className={`p-3 rounded-xl ${dispute.status === 'open'
-              ? 'bg-orange-500/10 text-orange-400'
-              : 'bg-emerald-500/10 text-emerald-400'
+            ? 'bg-orange-500/10 text-orange-400'
+            : 'bg-emerald-500/10 text-emerald-400'
             }`}>
             <AlertTriangle size={24} />
           </div>

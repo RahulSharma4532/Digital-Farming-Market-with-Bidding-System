@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Use environment variable for URL or default to localhost
-const SOCKET_URL = 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000';
 const socket = io(SOCKET_URL);
 
 export default function AdminLiveMonitor() {
@@ -69,7 +69,8 @@ export default function AdminLiveMonitor() {
 
         try {
             const token = localStorage.getItem('jwt');
-            await fetch(`http://localhost:5000/api/admin/auctions/${id}/stop`, {
+            const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            await fetch(`${BASE_URL}/admin/auctions/${id}/stop`, {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${token}` }
             });

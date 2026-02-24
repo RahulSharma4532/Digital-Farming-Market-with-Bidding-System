@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // Update this if your API base URL is different
-const API_URL = "http://localhost:5000/api/auctions";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = `${BASE_URL}/auctions`;
 
 const getAuctionDetails = async (auctionId) => {
     const response = await axios.get(`${API_URL}/${auctionId}`);

@@ -22,7 +22,8 @@ export default function FarmerVerification() {
   const fetchPendingFarmers = async () => {
     try {
       const token = localStorage.getItem('jwt');
-      const res = await fetch('http://localhost:5000/api/admin/farmers/pending', {
+      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${BASE_URL}/admin/farmers/pending`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -43,7 +44,8 @@ export default function FarmerVerification() {
     setAnimateCard(true);
     try {
       const token = localStorage.getItem('jwt');
-      await fetch(`http://localhost:5000/api/admin/farmers/${id}/verify`, {
+      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      await fetch(`${BASE_URL}/admin/farmers/${id}/verify`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -65,7 +67,8 @@ export default function FarmerVerification() {
     setAnimateCard(true);
     try {
       const token = localStorage.getItem('jwt');
-      await fetch(`http://localhost:5000/api/admin/farmers/${id}/reject`, {
+      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      await fetch(`${BASE_URL}/admin/farmers/${id}/reject`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }
       });

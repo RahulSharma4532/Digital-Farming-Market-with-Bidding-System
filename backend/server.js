@@ -20,13 +20,13 @@ const httpServer = createServer(app);
 // CORS Configuration
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: process.env.FRONTEND_URL || "*",
     methods: ["GET", "POST", "PUT", "DELETE"]
   }
 });
 
 app.use(cors({
-  origin: "*",
+  origin: process.env.FRONTEND_URL || "*",
   credentials: true
 }));
 app.use(express.json());

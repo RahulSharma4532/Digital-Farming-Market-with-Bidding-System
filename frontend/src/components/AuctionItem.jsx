@@ -5,7 +5,8 @@ import bidService from "../services/bidService";
 import { Gavel, Clock, Trophy, History, User, AlertCircle, ArrowUp } from "lucide-react";
 
 // Connect to socket outside component to avoid reconnects
-const socket = io("http://localhost:5000");
+const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000';
+const socket = io(SOCKET_URL);
 
 const AuctionItem = () => {
     const { id } = useParams();

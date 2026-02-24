@@ -80,7 +80,8 @@ export default function Checkout() {
         totalAmount: totalAmount
       };
 
-      const response = await fetch('http://localhost:5000/api/orders', {
+      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${BASE_URL}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

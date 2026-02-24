@@ -26,7 +26,8 @@ export default function AdminConfig() {
     const fetchConfig = async () => {
         try {
             const token = localStorage.getItem('jwt');
-            const res = await fetch('http://localhost:5000/api/admin/config', {
+            const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const res = await fetch(`${BASE_URL}/admin/config`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = await res.json();
@@ -52,7 +53,8 @@ export default function AdminConfig() {
         setLoading(true);
         try {
             const token = localStorage.getItem('jwt');
-            const res = await fetch('http://localhost:5000/api/admin/config', {
+            const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const res = await fetch(`${BASE_URL}/admin/config`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -209,8 +211,8 @@ function Toggle({ label, desc, checked, onChange, danger }) {
             <button
                 onClick={onChange}
                 className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${checked
-                        ? (danger ? 'bg-red-500' : 'bg-emerald-500')
-                        : 'bg-[#0f172a] border border-white/10'
+                    ? (danger ? 'bg-red-500' : 'bg-emerald-500')
+                    : 'bg-[#0f172a] border border-white/10'
                     }`}
             >
                 <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${checked ? 'translate-x-6' : 'translate-x-0'
