@@ -27,7 +27,7 @@ export default function UserManagement() {
         return;
       }
 
-      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const BASE_URL = import.meta.env.VITE_API_URL;
       const res = await fetch(`${BASE_URL}/admin/users`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -53,7 +53,7 @@ export default function UserManagement() {
         return u;
       }));
 
-      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const BASE_URL = import.meta.env.VITE_API_URL;
       await fetch(`${BASE_URL}/admin/users/${id}/status`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }
@@ -70,7 +70,7 @@ export default function UserManagement() {
         // Optimistic UI
         setUsers(users.filter(u => u._id !== id));
 
-        const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const BASE_URL = import.meta.env.VITE_API_URL;
         await fetch(`${BASE_URL}/admin/users/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }

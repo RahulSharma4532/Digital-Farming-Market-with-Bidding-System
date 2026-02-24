@@ -53,7 +53,7 @@ export default function AdminDashboard() {
     fetchNotifications();
 
     // Socket Connection
-    const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000';
+    const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '';
     const socket = io(SOCKET_URL);
 
     socket.on('connect', () => {
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem('jwt');
-      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const BASE_URL = import.meta.env.VITE_API_URL;
       const res = await fetch(`${BASE_URL}/admin/notifications`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
     if (!notification.isRead) {
       try {
         const token = localStorage.getItem('jwt');
-        const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const BASE_URL = import.meta.env.VITE_API_URL;
         await fetch(`${BASE_URL}/admin/notifications/${notification._id}/read`, {
           method: 'PUT',
           headers: { Authorization: `Bearer ${token}` }
@@ -122,7 +122,7 @@ export default function AdminDashboard() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('jwt'); // Assuming consistent token key
-      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const BASE_URL = import.meta.env.VITE_API_URL;
       const res = await fetch(`${BASE_URL}/admin/stats`, {
         headers: { Authorization: `Bearer ${token}` }
       });

@@ -19,7 +19,7 @@ export default function Disputes() {
   const fetchDisputes = async () => {
     try {
       const token = localStorage.getItem('jwt');
-      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const BASE_URL = import.meta.env.VITE_API_URL;
       const res = await fetch(`${BASE_URL}/admin/disputes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -37,7 +37,7 @@ export default function Disputes() {
   const handleResolve = async (id, status, resolutionText) => {
     try {
       const token = localStorage.getItem('jwt');
-      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const BASE_URL = import.meta.env.VITE_API_URL;
       await fetch(`${BASE_URL}/admin/disputes/${id}/resolve`, {
         method: 'PUT',
         headers: {

@@ -30,7 +30,7 @@ export default function Profile() {
         const token = localStorage.getItem('token') || localStorage.getItem('jwt');
         if (!token) return;
 
-        const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const BASE_URL = import.meta.env.VITE_API_URL;
         const res = await fetch(`${BASE_URL}/orders/my`, {
           headers: { Authorization: `Bearer ${token}` }
         });
