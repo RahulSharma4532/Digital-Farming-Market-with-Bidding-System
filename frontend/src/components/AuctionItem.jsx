@@ -5,7 +5,7 @@ import bidService from "../services/bidService";
 import { Gavel, Clock, Trophy, History, User, AlertCircle, ArrowUp } from "lucide-react";
 
 // Connect to socket outside component to avoid reconnects
-const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '';
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api' ? import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api'.replace('/api', '') : '';
 const socket = io(SOCKET_URL);
 
 const AuctionItem = () => {

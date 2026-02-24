@@ -14,7 +14,7 @@ export default function FeaturedAuctions() {
 
     const fetchAuctions = async () => {
         try {
-            const BASE_URL = import.meta.env.VITE_API_URL;
+            const BASE_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
             const res = await fetch(`${BASE_URL}/auctions?status=active`);
             const data = await res.json();
             // Take top 5 for the carousel

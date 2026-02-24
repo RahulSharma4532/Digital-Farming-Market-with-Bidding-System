@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Update this if your API base URL is different
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
 const API_URL = `${BASE_URL}/auctions`;
 
 const getAuctionDetails = async (auctionId) => {

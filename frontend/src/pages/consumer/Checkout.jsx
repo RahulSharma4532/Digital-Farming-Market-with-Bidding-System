@@ -80,7 +80,7 @@ export default function Checkout() {
         totalAmount: totalAmount
       };
 
-      const BASE_URL = import.meta.env.VITE_API_URL;
+      const BASE_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
       const response = await fetch(`${BASE_URL}/orders`, {
         method: 'POST',
         headers: {

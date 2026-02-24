@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const API_URL = import.meta.env.VITE_API_URL;
+            const API_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -39,7 +39,8 @@ export const AuthProvider = ({ children }) => {
             });
 
             const data = await response.json().catch(async (e) => {
-                const text = await response.text();
+                const responseClone = response.clone();
+                const text = await responseClone.text();
                 console.error("Failed to parse JSON. Status:", response.status, "Body:", text.slice(0, 200));
                 throw new Error(`Server returned invalid response (${response.status}). Check API URL: ${API_URL}`);
             });
@@ -65,7 +66,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password, role) => {
         try {
-            const BASE_URL = import.meta.env.VITE_API_URL;
+            const BASE_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
             const response = await fetch(`${BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -73,7 +74,8 @@ export const AuthProvider = ({ children }) => {
             });
 
             const data = await response.json().catch(async (e) => {
-                const text = await response.text();
+                const responseClone = response.clone();
+                const text = await responseClone.text();
                 console.error("Failed to parse JSON. Status:", response.status, "Body:", text.slice(0, 200));
                 throw new Error(`Server returned invalid response (${response.status}). Check API URL: ${BASE_URL}`);
             });

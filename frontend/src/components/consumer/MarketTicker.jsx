@@ -14,7 +14,7 @@ export default function MarketTicker() {
 
     const fetchFeed = async () => {
         try {
-            const BASE_URL = import.meta.env.VITE_API_URL;
+            const BASE_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
             const res = await fetch(`${BASE_URL}/auctions/feed`);
             const data = await res.json();
             if (res.ok && Array.isArray(data) && data.length > 0) {

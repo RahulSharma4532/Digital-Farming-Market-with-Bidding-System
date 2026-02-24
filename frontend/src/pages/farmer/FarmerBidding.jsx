@@ -4,7 +4,7 @@ import { Gavel, Users, TrendingUp, Clock, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // Use environment variable for URL or default to localhost
-const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '';
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api' ? import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api'.replace('/api', '') : '';
 const socket = io(SOCKET_URL);
 
 export default function FarmerBidding() {
@@ -34,7 +34,7 @@ export default function FarmerBidding() {
   const fetchAuctions = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auctions/seller`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api'}/auctions/seller`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();

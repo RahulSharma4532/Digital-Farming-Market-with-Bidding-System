@@ -19,7 +19,7 @@ export default function Disputes() {
   const fetchDisputes = async () => {
     try {
       const token = localStorage.getItem('jwt');
-      const BASE_URL = import.meta.env.VITE_API_URL;
+      const BASE_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
       const res = await fetch(`${BASE_URL}/admin/disputes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -37,7 +37,7 @@ export default function Disputes() {
   const handleResolve = async (id, status, resolutionText) => {
     try {
       const token = localStorage.getItem('jwt');
-      const BASE_URL = import.meta.env.VITE_API_URL;
+      const BASE_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
       await fetch(`${BASE_URL}/admin/disputes/${id}/resolve`, {
         method: 'PUT',
         headers: {

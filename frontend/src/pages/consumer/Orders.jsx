@@ -213,7 +213,7 @@ export default function Orders() {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const BASE_URL = import.meta.env.VITE_API_URL;
+        const BASE_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
         const response = await fetch(`${BASE_URL}/orders/my`, {
           headers: {
             'Authorization': `Bearer ${token}`

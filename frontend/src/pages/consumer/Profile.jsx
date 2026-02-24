@@ -30,7 +30,7 @@ export default function Profile() {
         const token = localStorage.getItem('token') || localStorage.getItem('jwt');
         if (!token) return;
 
-        const BASE_URL = import.meta.env.VITE_API_URL;
+        const BASE_URL = import.meta.env.VITE_API_URL || 'https://digital-farming-market-with-bidding.onrender.com/api';
         const res = await fetch(`${BASE_URL}/orders/my`, {
           headers: { Authorization: `Bearer ${token}` }
         });
