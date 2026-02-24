@@ -6,7 +6,7 @@ import bidService from "../../services/bidService"; // Assuming this exists or w
 
 // Create socket connection outside component to avoid reconnects
 // Use environment variable for URL or default to localhost
-const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '';
 const socket = io(SOCKET_URL);
 
 const LiveBidding = () => {
@@ -24,7 +24,7 @@ const LiveBidding = () => {
                 // We need an endpoint to get auction details. Assuming getAuction exists.
                 // If bidService doesn't have it, we'll fetch directly.
                 const token = localStorage.getItem('token');
-                const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auctions/${id}`, {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/auctions/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const data = await res.json();
@@ -73,7 +73,7 @@ const LiveBidding = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auctions/bid`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/auctions/bid`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
